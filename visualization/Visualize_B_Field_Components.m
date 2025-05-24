@@ -16,7 +16,7 @@ for i = 1:length(fields)
      || ((coilTag == 'x' || coilTag == 'z') && strcmp(fields{i}, 'bore_yg'))
         continue;
     end
-    figure('Color','w','Name',[upper(coilTag), ' 方向 - ', fields{i}, ' 区域磁场分量 DEMO'],'Position',[100,100,1200,400]);
+    figure('Color','w','Name',[upper(coilTag), ' 方向 - ', fields{i}, ' 区域磁场分量'],'Position',[100,100,1200,400]);
 
     switch fields{i}
         case 'bore_xg'
@@ -105,5 +105,4 @@ if isfield(obsPoints, 'rectYZ') && isfield(obsPoints, 'rectXZ') && ...
     disp(['[完成] ', upper(coilTag), ' 方向 DEMO 磁场分量 rectYZ & rectXZ 3D叠加展示完成']);
 end
 
-disp(['[完成] ', upper(coilTag), ' 方向 DEMO 磁场分量检查绘图全部完成 (自动适应所有区域)']);
 end

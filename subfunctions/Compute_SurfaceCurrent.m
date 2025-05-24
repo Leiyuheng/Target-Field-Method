@@ -83,20 +83,30 @@ disp('Compute_SurfaceCurrent: Jφ(φ,z) 与 Jz(φ,z) 计算完成');
 
 
 % 可视化 Γtr(z) 和 Γln(z)
+Gamma_tr_T = real(ifft(ifftshift(Gamma_tr_k .* T_k), 'symmetric'))';
+Gamma_tr_T = Gamma_tr_T / max(abs(Gamma_tr_T));
+Gamma_ln_T = real(ifft(ifftshift(Gamma_ln_k .* T_k), 'symmetric'))';
+Gamma_ln_T = Gamma_ln_T / max(abs(Gamma_ln_T));
+
 figure('Name','Gamma Functions','Position',[350,250,1300,600]);
 
 subplot(1,2,1);
-plot(z, Gamma_tr, 'LineWidth', 2);
+plot(z, Gamma_tr/ max(abs(Gamma_tr)), 'LineWidth', 2);hold on;
+plot(z,Gamma_tr_T, 'LineWidth', 2);
 xlabel('z (m)');
 ylabel('\Gamma_{tr}(z)');
-title(['\Gamma_{tr}(z),  d = ', num2str(params.d), 'm,  n = ', num2str(params.n_tr)]);
+title(['\Gamma_{tr}(z,normalized),  d = ', num2str(params.d), 'm,  n = ', num2str(params.n_tr)]);
 grid on;
+hold off;
+legend('\Gamma_{tr}', '\Gamma_{tr} \cdot T')
 
 subplot(1,2,2);
-plot(z, Gamma_ln, 'LineWidth', 2);
+plot(z, Gamma_ln/max(abs(Gamma_ln)), 'LineWidth', 2);hold on;
+plot(z, Gamma_ln_T, 'LineWidth', 2);
 xlabel('z (m)');
 ylabel('\Gamma_{ln}(z)');
-title(['\Gamma_{ln}(z),  d = ', num2str(params.d), 'm,  n = ', num2str(params.n_ln)]);
+title(['\Gamma_{ln}(z,normalized),  d = ', num2str(params.d), 'm,  n = ', num2str(params.n_ln)]);
 grid on;
+hold off;
 
 end
