@@ -40,11 +40,11 @@ Classical TFM method for MRI for the transverse dominant magnetic field under Ha
 3. 若后续需要支持更复杂几何，可基于此框架扩展边界处理逻辑。
 ![image](https://github.com/user-attachments/assets/465b34e1-97dd-4fa8-a403-2e5ccedcb93e)
 
-*图 1. X 方向梯度线圈等值线示意图*
+*图 1. X 方向梯度线圈等值线未处理示意图，可以看到该组等值线由两组相同互补的等值线构成*
 
 ![image](https://github.com/user-attachments/assets/8cd2b110-aba8-48d2-848c-50ab45b0e644)
 
-*图 2. Y 方向梯度线圈等值线示意图*
+*图 2. X 方向梯度线圈等值线处理后示意图，可以看到该组等值线被合并为一组*
 ---
 
 > 详细情况可见记录.docx
