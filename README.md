@@ -45,6 +45,7 @@ Classical TFM method for MRI for the transverse dominant magnetic field under Ha
 ![image](https://github.com/user-attachments/assets/8cd2b110-aba8-48d2-848c-50ab45b0e644)
 
 *图 2. X 方向梯度线圈等值线处理后示意图，可以看到该组等值线被合并为一组*
+
 ---
 
 > 详细情况可见记录.docx
