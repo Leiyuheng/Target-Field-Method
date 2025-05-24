@@ -38,7 +38,10 @@ Classical TFM method for MRI for the transverse dominant magnetic field under Ha
 1. 在生成等值线后，调用处理函数进行互补段检测与拼接。  
 2. 视具体应用场景，酌情调整 `tolerance` 参数。  
 3. 若后续需要支持更复杂几何，可基于此框架扩展边界处理逻辑。
-
+![image](https://github.com/user-attachments/assets/465b34e1-97dd-4fa8-a403-2e5ccedcb93e)
+*图 1. X 方向梯度线圈等值线示意图*
+![image](https://github.com/user-attachments/assets/8cd2b110-aba8-48d2-848c-50ab45b0e644)
+*图 2. Y 方向梯度线圈等值线示意图*
 ---
 
 > 详细情况可见记录.docx
