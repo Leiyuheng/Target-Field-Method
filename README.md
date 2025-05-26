@@ -42,6 +42,8 @@ Classical TFM method for MRI for the transverse dominant magnetic field under Ha
 
 *图 1. X 方向梯度线圈等值线未处理示意图，可以看到该组等值线由两组相同互补的等值线构成*
 
+绿色为每条路径起点，黑色为终点，可以看到两组线圈路径互补
+
 ![image](https://github.com/user-attachments/assets/8cd2b110-aba8-48d2-848c-50ab45b0e644)
 
 *图 2. X 方向梯度线圈等值线处理后示意图，可以看到该组等值线被合并为一组*
