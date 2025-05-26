@@ -31,6 +31,7 @@ Visualize_B_Field_Components(B_cal_xg, obsPoints, 'x', params);
 Visualize_B_Field_Components(B_cal_yg, obsPoints, 'y', params);
 Visualize_B_Field_Components(B_cal_zg, obsPoints, 'z', params);
 
+% 保存图片
 save_all_figures();
 
 
