@@ -66,7 +66,7 @@ obsPoints.rectXZ = [X_grid(:), Y_grid(:), Z_grid(:)];
 
 %% 可视化
 
-figure('Color', 'w','Position',[500,500,600,600]);
+figure('Name','观察点示意图' , 'Color', 'w','Position',[500,500,600,600]);
 hold on;
 axis equal;
 grid on;

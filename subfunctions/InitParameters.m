@@ -4,7 +4,7 @@ function params = InitParameters()
 
 % 几何参数
 params.a = 0.14;  % 外圆柱半径 [m]
-params.b = 0.05;  % 梯度场DSV圆柱半径
+params.b = 0.1;  % 梯度场DSV圆柱半径
 
 % 梯度场参数
 params.gx = 1;  % x方向梯度强度 [T/m]
@@ -12,14 +12,14 @@ params.gy = 1;  % y方向梯度强度 [T/m]
 params.gz = 1;  % z方向梯度强度 [T/m]
 
 % 梯度形状函数调节参数
-params.d_factor = 1.5;   % d= d_factor * a （可调因子）
+params.d_factor = 1.1;   % d= d_factor * a （可调因子）
 params.d = params.d_factor * params.a; % 梯度长度参数 [m]
 
 params.n_tr = 30;  % x/y方向梯度场 阶数n
 params.n_ln = 16;  % z方向梯度场 阶数n
 
 % Apodization滤波参数
-params.h = 0.2;  % 频域高斯滤波强度（调节高频抑制）
+params.h = 0.05;  % 频域高斯滤波强度（调节高频抑制）
 
 % 离散化参数
 params.phi_num = 256;  % φ方向离散点数
