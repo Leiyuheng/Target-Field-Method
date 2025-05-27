@@ -1,8 +1,5 @@
 function obsPoints = GenerateObservationPoints(params)
-% 功能：生成需要计算磁场的点，选择根据可视化图来选取一部分点，而不是整体计算，提高效率
-% 输入：
-%   params - 结构体，用户自定义参数，建议参考 InitParameters.m 结构
-%   obsPoints - 结构体，包含所有生成的观测点（列向量形式）
+% 生成需要计算磁场的点，选择根据可视化图来选取一部分点，而不是整体计算，提高效率
 
 obsPoints = struct();
 r = params.b; % 控制绘图平面大小
@@ -62,6 +59,27 @@ Y_grid = zeros(size(X_grid));
 
 obsPoints.rectXZ = [X_grid(:), Y_grid(:), Z_grid(:)];
 
+%% 这部分的观察点用于计算效率 点数用z_num控制
+
+sample_num = params.z_num;
+
+% x梯度线圈DSV轴线
+z_vec = zeros(size(z_vec));
+x_vec = linspace(-params.b, params.b, sample_num);
+y_vec = zeros(size(z_vec));
+obsPoints.xg_eta = [x_vec; y_vec; z_vec]';% [N x 3]
+
+% y梯度线圈DSV轴线
+z_vec = zeros(size(z_vec));
+y_vec = linspace(-params.b, params.b, sample_num);
+x_vec = zeros(size(z_vec));
+obsPoints.yg_eta = [x_vec; y_vec; z_vec]';% [N x 3]
+
+% z梯度线圈DSV轴线
+x_vec = zeros(size(z_vec));
+z_vec = linspace(-params.b, params.b, sample_num);
+y_vec = zeros(size(z_vec));
+obsPoints.zg_eta = [x_vec; y_vec; z_vec]';% [N x 3]
 
 
 %% 可视化
@@ -106,7 +124,7 @@ scatter3(obsPoints.rectXZ(:,1), obsPoints.rectXZ(:,2), obsPoints.rectXZ(:,3), 10
 
 
 % 图例与视图设置
-legend({'辅助圆柱', 'bore\_xg 线', 'bore\_yg 线', ...
+legend({'辅助圆柱', 'bore\_xg 线', 'bore\_yg 线',...
         'transverse 圆盘点', 'sphericalVolume 球体内部点', ...
         'rectYZ (x=0)', 'rectXZ (y=0)'}, ...
        'Location', 'northeast');

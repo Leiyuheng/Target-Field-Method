@@ -29,4 +29,4 @@ for i = 1:length(figHandles)
     exportgraphics(fig, filename, 'Resolution', 300);
 end
 
-disp('[完成] 所有 subplot 图像已导出至 ./pic 文件夹。');
+disp('所有图像已导出至 ./pic 文件夹。');

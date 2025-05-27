@@ -1,12 +1,5 @@
 function B_cal = Compute_MagneticField_BiotSavart(coilPaths, obsPoints, params, coilTag, I)
-% 功能：基于 Biot-Savart 定律，计算给定线圈路径在指定场点的磁场分量
-% 输入：
-%   coilPaths - 结构体（Positive/Negative，cell array，每个 cell 为 [N x 3] double）
-%   obsPoints - 结构体，包含 bore, transverse, sphericalVolume，每个为 [M x 3] double
-%   I         - 电流 [A]
-% 输出：
-%   B_cal - 结构体，包含 B_bore, B_transverse, B_spherical，每个为 [M x 3] double
-
+% 基于 Biot-Savart 定律，计算给定线圈路径在指定场点的磁场分量
 
 if nargin < 5 || isempty(I)
     I = 1; % 默认电流 1 A
@@ -27,11 +20,22 @@ B_cal.B_transverse = compute_field_at_points(coilPaths, obsPoints.transverse, I,
 % 计算 sphericalVolume 场点磁场
 B_cal.B_spherical = compute_field_at_points(coilPaths, obsPoints.sphericalVolume, I, mu0);
 
+% 计算 XZ截面 场点磁场
 B_cal.B_rectXZ = compute_field_at_points(coilPaths, obsPoints.rectXZ, I, mu0);
 
+% 计算 YZ截面 场点磁场
 B_cal.B_rectYZ = compute_field_at_points(coilPaths, obsPoints.rectYZ, I, mu0);
 
-disp(['[完成] ', upper(coilTag), ' 方向梯度线圈磁场计算完成！']);
+% 计算 x梯度效率计算 场点磁场
+B_cal.B_xg_eta = compute_field_at_points(coilPaths, obsPoints.xg_eta, I, mu0);
+
+% 计算 y梯度效率计算 场点磁场
+B_cal.B_yg_eta = compute_field_at_points(coilPaths, obsPoints.yg_eta, I, mu0);
+
+% 计算 z梯度效率计算 场点磁场
+B_cal.B_zg_eta = compute_field_at_points(coilPaths, obsPoints.zg_eta, I, mu0);
+
+disp([ upper(coilTag), ' 方向梯度线圈磁场计算完成']);
 
 end
 

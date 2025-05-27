@@ -1,11 +1,5 @@
 function paths_out = ProcessPaths(paths_in, close_threshold, match_threshold)
-% 功能：后处理路径，完成闭合判定与互补曲线合并
-% 输入：
-%   paths_in - cell数组，每个cell是一条路径（Nx3矩阵）
-%   close_threshold - 判定自身闭合的距离阈值
-%   match_threshold - 判定互补曲线匹配的距离阈值
-% 输出：
-%   paths_out - 处理后路径cell数组
+% 后处理路径，完成闭合判定与互补曲线合并
 
 paths_out = {};
 used = false(1, length(paths_in));

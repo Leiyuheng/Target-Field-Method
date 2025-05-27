@@ -1,5 +1,6 @@
 function visual_coilpath(coilPaths_x, coilPaths_y, coilPaths_z)
 % 用于导线路径部分可视化
+
 figure("Name",'导线路径示意','Position',[500,400,1300,600]);
 tiledlayout(1,3,'TileSpacing','compact','Padding','compact'); 
 

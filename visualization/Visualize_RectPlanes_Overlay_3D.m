@@ -1,11 +1,5 @@
 function Visualize_RectPlanes_Overlay_3D(B_cal, obsPoints, componentIdx, coilTag, cbarRange, params)
-% 在 3D 中叠加显示 rectYZ 和 rectXZ 两个平面磁场分布，并设置 colorbar 范围
-% 输入：
-%   B_cal - 包含 B_rectYZ, B_rectXZ
-%   obsPoints - 包含 rectYZ, rectXZ
-%   componentIdx - 1(Bx), 2(By), 3(Bz)
-%   coilTag - 'x','y','z'
-%   cbarRange - [min max]，可选
+% 在 3D 中叠加显示 rectYZ 和 rectXZ 两个平面磁场分布，可设置 colorbar 范围方便比较
 
 % rectYZ
 obs_YZ = obsPoints.rectYZ;

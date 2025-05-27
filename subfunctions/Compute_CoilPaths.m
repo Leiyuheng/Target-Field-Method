@@ -1,5 +1,5 @@
 function coilPaths = Compute_CoilPaths(streamFunction, surfaceCurrent, params, direction)
-% 功能：将Ψ等值线转换为导线路径点，并按电流实际方向输出路径数据
+% 将Ψ等值线转换为导线路径点，并按电流实际方向输出路径数据
 % coilPaths - 结构体，包含 Positive 与 Negative 路径，均已按电流流动方向排序
 
 %% 参数提取

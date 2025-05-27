@@ -1,5 +1,5 @@
 function streamFunction = Compute_StreamFunction(surfaceCurrent, params)
-% streamFunction - 各方向流函数与绕线路径数据
+% 计算各方向流函数与绕线路径数据
 
 %提取参数
 phi = surfaceCurrent.phi;

@@ -1,10 +1,5 @@
 function Visualize_B_Field_Components(B_cal, obsPoints, coilTag, params)
-% DEMO 可视化 B_cal 中所有区域的 Bx/By/Bz 分量（含 rectYZ & rectXZ 联合展示）
-%
-% 输入：
-%   B_cal - 结构体，包含 B_bore, B_transverse, B_spherical, B_rectYZ, B_rectXZ
-%   obsPoints - 结构体，包含 bore, transverse, sphericalVolume, rectYZ, rectXZ
-%   coilTag - 字符串 'x','y','z'
+% 可视化 B_cal 中所有区域的 Bx/By/Bz 分量（含 rectYZ & rectXZ 联合展示，不包含效率计算场点）
 
 fields = {'bore_xg', 'bore_yg', 'transverse', 'sphericalVolume'};
 B_fields = {'B_bore_xg', 'B_bore_yg', 'B_transverse', 'B_spherical'};
@@ -102,7 +97,6 @@ if isfield(obsPoints, 'rectYZ') && isfield(obsPoints, 'rectXZ') && ...
     % Visualize_RectPlanes_Overlay_3D(B_cal, obsPoints, 2, coilTag, [], params); % y分量
     % Visualize_RectPlanes_Overlay_3D(B_cal, obsPoints, 3, coilTag, [], params); % z分量
 
-    disp(['[完成] ', upper(coilTag), ' 方向 DEMO 磁场分量 rectYZ & rectXZ 3D叠加展示完成']);
 end
 
 end

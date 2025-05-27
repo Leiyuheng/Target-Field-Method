@@ -1,6 +1,5 @@
 function surfaceCurrent = Compute_SurfaceCurrent(params)
-% 功能：计算表面电流密度 Jφ(φ,z)、轴向电流密度 Jz(φ,z)（TFM谱域法）
-% surfaceCurrent - 结构体，包含 Jφ_x/y/z, Jz_x/y/z, phi, z
+% 计算表面电流密度 Jφ(φ,z)、轴向电流密度 Jz(φ,z)（TFM谱域法）
 
 %参数提取
 phi = params.phi;
