@@ -47,7 +47,7 @@ params.mu0 = 4*pi*1e-7;  % 真空磁导率 [H/m]
 params.num_levels = 16; %单个线圈匝数保持偶数，则线圈对称相同，否则会出现0等值线
 
 % 线圈重新插值采样点倍数
-params.inter_fac = 2.5;
+params.inter_fac = 2;
 
 % 线圈重新插值方法选择
 params.method = 'linear';
@@ -65,8 +65,8 @@ params.Nb = params.num_levels*2;
 params.beta = 30;
 
 % 最后可实现时考虑的实际导线半径与额外安全间距(飞线用）
-params.rWire   = 0.002;    % 导线半径        (m)
-params.gap     = 0.001;   % 额外安全间隙    (m)
+params.rWire   = 0.002; % 导线半径(m)
+params.gap     = 0.001; % 额外安全间隙(m)
 
 %显示信息
 disp('参数初始化：');

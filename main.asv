@@ -22,17 +22,9 @@ CoilPath_Achievable_zg = Achievable_CoilPath(coilPaths_zg, params, 'z');
 
 % 输出到TXT
 datax = CoilPath_Achievable_xg.Serial{1}; 
-datay = CoilPath_Achievable_yg.Serial{1}; 
-dataz = CoilPath_Achievable_zg.Serial{1}; 
-xfname = 'CoilPath_Achievable_xg';
-yfname = 'CoilPath_Achievable_yg';
-zfname = 'CoilPath_Achievable_zg';
-writematrix(datax, xfname, 'Delimiter', 'space');
-fprintf('写入 %s （%d 行 × %d 列）\n', xfname, size(datax,1), size(datax,2));
-writematrix(datay, yfname, 'Delimiter', 'space');
-fprintf('写入 %s （%d 行 × %d 列）\n', yfname, size(datay,1), size(datay,2));
-writematrix(dataz, zfname, 'Delimiter', 'space');
-fprintf('写入 %s （%d 行 × %d 列）\n', zfname, size(dataz,1), size(dataz,2));
+xfname = 'Coil_x';
+    writematrix(M, fname, 'Delimiter', 'space');
+    fprintf('写入 %s （%d 行 × %d 列）\n', fname, size(M,1), size(M,2));
 %% 计算线圈磁场部分
 % 生成磁场计算点
 obsPoints = GenerateObservationPoints(params);
