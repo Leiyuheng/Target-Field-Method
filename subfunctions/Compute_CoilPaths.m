@@ -7,7 +7,6 @@ phi = params.phi;
 z   = params.z;
 r   = params.a;
 num_levels = params.num_levels;
-ratio = params.dir_check_ratio;  % 默认取前10%
 
 % 选择对应方向的数据
 switch lower(direction)
@@ -79,7 +78,7 @@ for i = 1:length(procPaths.Negative)
 
     switch dir
         case 'x'
-            % z梯度线圈反转条件
+            % x梯度线圈反转条件
             if pathN(1,2) > 0
                 corrected.Negative{i} = flipud(pathN);
             end

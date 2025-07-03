@@ -45,11 +45,11 @@ function B_total = compute_field_at_points(coilPaths, fieldPoints, I, mu0)
 
 B_total = zeros(size(fieldPoints)); % 初始化
 
-% 处理 Positive 路径
-B_total = B_total + sum_fields_from_paths(coilPaths.Positive, fieldPoints, I, mu0);
-
-% 处理 Negative 路径
-B_total = B_total + sum_fields_from_paths(coilPaths.Negative, fieldPoints, I, mu0);
+groups = fieldnames(coilPaths);
+for i = 1:numel(groups)
+    grp = groups{i};
+    B_total = B_total + sum_fields_from_paths(coilPaths.(grp), fieldPoints, I, mu0);
+end
 
 
 end

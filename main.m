@@ -23,7 +23,7 @@ obsPoints = GenerateObservationPoints(params);
 B_cal_xg = Compute_MagneticField_BiotSavart(coilPaths_xg, obsPoints, params, 'x'); % 默认1A电流
 B_cal_yg = Compute_MagneticField_BiotSavart(coilPaths_yg, obsPoints, params, 'y');
 B_cal_zg = Compute_MagneticField_BiotSavart(coilPaths_zg, obsPoints, params, 'z');
-% 
+
 %% 结果可视化
 % visual_J
 visual_coilpath(coilPaths_xg, coilPaths_yg, coilPaths_zg);
@@ -31,6 +31,11 @@ Visualize_B_Field_Components(B_cal_xg, obsPoints, 'x', params);
 Visualize_B_Field_Components(B_cal_yg, obsPoints, 'y', params);
 Visualize_B_Field_Components(B_cal_zg, obsPoints, 'z', params);
 
+
+%% 可实现线圈转换
+CoilPath_Achievable_xg = Achievable_CoilPath(coilPaths_xg, params, 'x');
+CoilPath_Achievable_yg = Achievable_CoilPath(coilPaths_yg, params, 'y');
+CoilPath_Achievable_zg = Achievable_CoilPath(coilPaths_zg, params, 'z');
 
 %% 计算圆柱轴线上的磁场，以此为参照计算效率
 disp('效率计算:');
@@ -59,7 +64,12 @@ zg_eta = abs((B_zg_max-B_zg_min)/(pos_zg_max(3)-pos_zg_min(3)));
 fprintf("Z方向梯度线圈效率为：%.3f mT/m/A \n",zg_eta*1000);
 
 
-% 保存图片
+
+
+
+
+
+%% 保存图片
 save_all_figures();
 
 
