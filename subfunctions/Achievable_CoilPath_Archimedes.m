@@ -1,10 +1,16 @@
-function CoilPath_Achievable = Achievable_CoilPath(CoilPath, params, direction)
+function CoilPath_Achievable = Achievable_CoilPath_Archimedes(CoilPath, params, direction, endtail_num_inside, endtail_num_outside)
 % 将线圈转变为串联导线
 % 注意 在之前的计算中 会发现Positive的两组线圈是由略微差异的
 % 这些差异包括数据点不均匀，数据点数量不同，形状略有差异（几乎可以忽略）
 % 从MRI理论上说，原本两组线圈应当是一致的 但是由于contourc函数直接输出等值线，因此差异原因并不透明
 % 因此为了拐角检测等处理的方便，在该可实现处理中对Positive与Negative中的一组（Positive1与Negative1）进行插值重建
 % 另一组（Positive2与Negative2）由重建一组在phi方向上平移pi(XY梯度)或z方向对称(Z梯度)得到
+% 可以通过手动微调endtail_num_inside, endtail_num_outside 来控制螺旋线起始点
+% 从而略微调整连接形状 默认都是0 0
+if nargin < 4 % 只传了3 个参数
+    endtail_num_inside  = 0;
+    endtail_num_outside = 0;
+end
 
 smooth_N = params.smooth_N;
 factor = params.inter_fac; 
@@ -203,7 +209,7 @@ disp('✔ 所有组的 ψ 已与 [θ,z] 完全一一对应。');
 % plotSpiralDotLine(Achi_CoilPath_uniform, '插值后的均匀线圈图');
 
 %% 第四部分 进行拐角检测
-CornerIdx = DetectSpiralCorners(Achi_CoilPath_uniform, CoilPsi_uniform, deltaPsi);
+CornerIdx = DetectSpiralCorners(Achi_CoilPath_uniform, CoilPsi_uniform, deltaPsi, params);
 % CornerIdx也是一个结构体，其包括四组:Positive两组，Negative两组
 % 每组中也有M个cell，每个cell是一个1*4的数组，其中顺序存放这该曲线四个象限的拐点索引
 
@@ -217,6 +223,7 @@ CornerIdx = DetectSpiralCorners(Achi_CoilPath_uniform, CoilPsi_uniform, deltaPsi
 CoilPath_serial_within = struct();
 Psi_segment_save = struct();
 groups = fieldnames(CoilPsi_uniform);
+delta_endtail = endtail_num_inside- endtail_num_outside;
 for k = 1:numel(groups)
     grp = groups{k};
     curves = CoilPsi_uniform.(grp);
@@ -229,16 +236,16 @@ for k = 1:numel(groups)
         pts2 = Achi_CoilPath_uniform.(grp){j+1}; % 得到相邻两个曲线的极角psi和phi-z数据
         
         if startsWith(grp, 'Positive')
-            % Positive，从pi到-pi排序
+            % Positive，从pi到-pi排序，从外圈向内走
             start1 = CornerIdx.(grp){j}(3);
-            end1 = CornerIdx.(grp){j}(2);
-            % end1 = find( psi1 < pi/2, 1, 'first' ); % 终止点为90度位置
+            end1 = CornerIdx.(grp){j}(2) + endtail_num_outside + floor(delta_endtail*j/(M-1));
+            % end1 = find( psi1 < deg2rad(170), 1, 'first' ); % 终止点为90度位置
 
             psi1_segment = [psi1(start1:end);psi1(1:end1)]; % 跨起始点拼接 需要检查开始象限与终止象限是否跨起始点
             pts1_segment = [pts1(start1:end,:);pts1(1:end1,:)]; 
         else
-            % Negative，从-pi到pi排序
-            start1 = CornerIdx.(grp){j}(4);
+            % Negative，从-pi到pi排序，从内圈向外走
+            start1 = CornerIdx.(grp){j}(4) - endtail_num_inside + floor(delta_endtail*j/(M-1));
             end1 = CornerIdx.(grp){j}(1);
 
             psi1_segment = psi1(start1:end1); % 从第四象限到第一象限不跨起点
@@ -302,8 +309,30 @@ for k = 1:numel(groups)
    
 end
 
+% 对于z梯度线圈进行特殊处理，截断最后造成飞线负角度的部分
+% 即内圈最后只落到极角为pi/2或-pi/2处
+if startsWith(direction,'z')
+    groups = fieldnames(CoilPath_serial_within);
+    for k = 1:numel(groups)
+        grp = groups{k};
+        if startsWith(grp,'Positive') % 对于Positive 选-pi/2极角做判断
+            curve = CoilPath_serial_within.(grp){end};
+            psi_curve = Calculate_Psi(curve);
+            idx_cut = find(psi_curve > -pi/2 & psi_curve < 0, 1, 'last');
+            CoilPath_serial_within.(grp){end} = curve(1:idx_cut,:);
+        else % 对于Negative 选pi/2极角做判断
+            curve = CoilPath_serial_within.(grp){1};
+            psi_curve = Calculate_Psi(curve);
+            idx_cut = find(psi_curve > pi/2, 1, 'first');
+            CoilPath_serial_within.(grp){1} = curve(idx_cut:end,:);
+        end
+    end
+end
+
+
+
 % 作图验证
-% plotSpiralDotLine(CoilPath_serial_within, ['串联等值线内圈点线图，使用',num2str(smooth_N),'阶平滑阶跃连接']);
+plotSpiralDotLine(CoilPath_serial_within, ['串联等值线内圈点线图，使用',num2str(smooth_N),'阶平滑阶跃连接']);
 
 %% 第六部分 串联组间曲线
 
@@ -359,9 +388,12 @@ idx_curve2 = find(psi_curve2 < psi2 & psi_curve2 < 0, 1, 'last'); % Negative
 
 % [~, idx_curve1] = min( abs( angle( exp(1i*(psi_curve1 - psi1)) ) ) ); 
 % [~, idx_curve2] = min( abs( angle( exp(1i*(psi_curve2 - psi2)) ) ) );
-
+Minpts = 10;
+idx_curve1 = max(Minpts,idx_curve1);
+idx_curve2 = min(length(curve2)-Minpts,idx_curve2);
 seg1 = curve1(1:idx_curve1 ,:);
 seg2 = curve2(idx_curve2:end ,:);
+
 
 % 线性平移phi
 N1 = length(seg1);
@@ -497,9 +529,9 @@ end
     P2 = CoilPath_serial_all.(negGrp)(1,:);
     
     dphi = angle( exp(1i * (P2(1) - P1(1))) ); % 最短差值
-    phiB = linspace(P1(1), P1(1) + dphi, 10*Nt).'; % 插值点数为10倍的匝数
+    phiB = linspace(P1(1), P1(1) + dphi, 20*Nt).'; % 插值点数为20倍的匝数
     
-    zB   = linspace(P1(2), P2(2), 10*Nt).';
+    zB   = linspace(P1(2), P2(2), 20*Nt).';
     
     bridge = [wrapToPi(phiB) , zB]; % 拼成插值线
 
@@ -516,7 +548,7 @@ end
  end
 
 % 作图验证
-plotSpiralDotLine(CoilPath_serial_outside, [direction,'飞线串联示意图']);
+plotSpiralDotLine(CoilPath_serial_all, [direction,'飞线串联示意图']);
 
 %% 第九部分 串联所有数据点并转为三维坐标
 % 这里的拼接顺序与第八部分的PairList顺序一样
@@ -547,7 +579,9 @@ x = R .* cos(phi);
 y = R .* sin(phi);
 
 Serial = [x , y , z];
-SerialLoop = [Serial; Serial(1,:)];
+% 假设 Serial 是 N×3 double 无首尾闭合 现在删除重复点
+SerialClean = removeAndCheckDuplicates(Serial);
+SerialLoop = [SerialClean; SerialClean(1,:)];
 % 将输出封装为与之前的数据相同的struct-cell结构，方便后续磁场计算
 CoilPath_Achievable.Serial = { SerialLoop };
 
@@ -732,3 +766,35 @@ hold off;
 
 end
 
+function SerialClean = removeAndCheckDuplicates(SerialLoop)
+% removeAndCheckDuplicates  删除相邻重复点并检测非相邻重复
+%
+%   SerialClean = removeAndCheckDuplicates(SerialLoop)
+%
+%   输入：
+%     SerialLoop — N×3 double 矩阵（保证无首尾闭合）
+%   输出：
+%     SerialClean — 去掉所有相邻重复点后的矩阵
+%
+%   步骤：
+%     1) 用 diff 检测并删除相邻重复行
+%     2) 用 sortrows＋diff 检测剩余的非相邻重复行，若有则报错
+
+    tol = 1e-8;  % 数值容忍度
+
+    % —— 第一步：删除任意相邻重复点 —— 
+    D = abs(diff(SerialLoop,1,1));       % (N-1)×3
+    adjDup = all(D < tol, 2);            % 哪些行与下一行“相同”
+    keep = [true; ~adjDup];              % 保留第一行，其它行视前一 diff
+    SerialClean = SerialLoop(keep, :);
+
+    % —— 第二步：检测非相邻重复 —— 
+    % 排序后再 diff，相同的行就会挨在一起
+    S2 = sortrows(SerialClean);
+    D2 = abs(diff(S2,1,1));
+    if any(all(D2 < tol, 2))
+        error('检测到非相邻重复点，请检查输入数据！');
+    else
+        disp('已删除重复点，并未检测到非相邻重复点');
+    end
+end

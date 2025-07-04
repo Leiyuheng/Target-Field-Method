@@ -1,6 +1,6 @@
-function CornerIdx = DetectSpiralCorners(Achi_CoilPath_uniform, CoilPsi_uniform, deltaPsi)
+function CornerIdx = DetectSpiralCorners(Achi_CoilPath_uniform, CoilPsi_uniform, deltaPsi, params)
 % 根据曲率检测拐点
-
+r = params.a; % 圆柱外半径
 groups = fieldnames(Achi_CoilPath_uniform);
 M      = numel(Achi_CoilPath_uniform.(groups{1}));
 
@@ -21,7 +21,8 @@ for g = 1:numel(groups)
         z     = D(:,2);   % newN×1
         
         % 用 gradient 做一阶、二阶导近似
-        dtheta  = gradient(theta);   
+        stheta = r * theta;
+        dtheta  = gradient(stheta);   
         dz      = gradient(z);
         ddtheta = gradient(dtheta);
         ddz     = gradient(dz);

@@ -16,9 +16,9 @@ coilPaths_yg = Compute_CoilPaths(streamFunction, surfaceCurrent, params, 'y');
 coilPaths_zg = Compute_CoilPaths(streamFunction, surfaceCurrent, params, 'z');
 
 %% 可实现线圈转换
-CoilPath_Achievable_xg = Achievable_CoilPath(coilPaths_xg, params, 'x');
-CoilPath_Achievable_yg = Achievable_CoilPath(coilPaths_yg, params, 'y');
-CoilPath_Achievable_zg = Achievable_CoilPath(coilPaths_zg, params, 'z');
+CoilPath_Achievable_xg = Achievable_CoilPath_Archimedes(coilPaths_xg, params, 'x', 0, 0);
+CoilPath_Achievable_yg = Achievable_CoilPath_Archimedes(coilPaths_yg, params, 'y', 0, 0);
+CoilPath_Achievable_zg = Achievable_CoilPath_Archimedes(coilPaths_zg, params, 'z', 0, 0);
 
 % 输出到TXT
 datax = CoilPath_Achievable_xg.Serial{1}; 
@@ -49,9 +49,9 @@ B_cal_zg = Compute_MagneticField_BiotSavart(CoilPath_Achievable_zg, obsPoints, p
 %% 结果可视化
 % visual_J
 visual_coilpath(coilPaths_xg, coilPaths_yg, coilPaths_zg);
-Visualize_B_Field_Components(B_cal_xg, obsPoints, 'x', params);
-Visualize_B_Field_Components(B_cal_yg, obsPoints, 'y', params);
-Visualize_B_Field_Components(B_cal_zg, obsPoints, 'z', params);
+% Visualize_B_Field_Components(B_cal_xg, obsPoints, 'x', params);
+% Visualize_B_Field_Components(B_cal_yg, obsPoints, 'y', params);
+% Visualize_B_Field_Components(B_cal_zg, obsPoints, 'z', params);
 
 
 

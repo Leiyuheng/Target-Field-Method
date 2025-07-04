@@ -19,11 +19,11 @@ params.n_tr = 30;  % x/y方向梯度场 阶数n
 params.n_ln = 16;  % z方向梯度场 阶数n
 
 % Apodization滤波参数
-params.h = 0.05;  % 频域高斯滤波强度（调节高频抑制）
+params.h = 0.1;  % 频域高斯滤波强度（调节高频抑制）
 
 % 离散化参数
 params.phi_num = 256;  % φ方向离散点数
-params.z_num = 256;    % z方向离散点数
+params.z_num = 128;    % z方向离散点数
 params.k_num = params.z_num;   % k频域离散点数，是z的fft，因此二者点数必须相同
 params.r_num = 16;  % 外径网格
 params.b_num = 24; % 内径网格
@@ -43,17 +43,17 @@ params.r = linspace(0, params.a, params.r_num);
 % 常数参数
 params.mu0 = 4*pi*1e-7;  % 真空磁导率 [H/m]
 
-% 线圈匝数
-params.num_levels = 16; %单个线圈匝数保持偶数，则线圈对称相同，否则会出现0等值线
+% 单个线圈匝数
+params.num_levels = 14;
 
 % 线圈重新插值采样点倍数
-params.inter_fac = 2;
+params.inter_fac = 1.2;
 
 % 线圈重新插值方法选择
 params.method = 'linear';
 
-% 线圈螺旋平滑阶跃阶数
-params.smooth_N = 5; % 3 5 7可选 阶数越高，连接点越平滑，阶数越低 整体越协调
+% 线圈螺旋平滑阶跃控制
+params.smooth_N = 3; % 阶数控制 可选3 5 7
 
 % 从外向内相邻曲线拐角点的极角差值容限
 params.deltaPsi = 0.2;
