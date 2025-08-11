@@ -10,6 +10,7 @@ num_levels = params.num_levels;
 
 % 选择对应方向的数据
 % 根据经验设置contourc的等值线最小幅度阈值 低于该幅度不作为路径 可以减小体积
+% 控制线圈产生的最小势能阈值 通过v
 switch lower(direction)
     case 'x'
         Psi  = streamFunction.Psi_x;
