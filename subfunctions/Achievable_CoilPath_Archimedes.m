@@ -130,7 +130,7 @@ for k = 1:numel(groups)
     end
 end
 
-% 无论从作图还是质心都会发现两组Positive和Negative都有略微的区别，可能是由于数值误差导致
+% 无论从作图还是质心都会发现两组Positive和Negative都有略微的区别，可能是由于数值误差导致，所以使用对称方法很有必要
 % 因为获取等值线是通过contourc函数获取的，因此这部分差异的原因并不透明
 % 下面进行排序
 Achi_CoilPath_cyl_sorted = struct();
@@ -206,8 +206,42 @@ end
 disp('✔ 所有组的 ψ 已与 [θ,z] 完全一一对应。');
 
 % 作图验证
-% plotSpiralDotLine(Achi_CoilPath_uniform, '插值后的均匀线圈图');
+plotSpiralDotLine(Achi_CoilPath_uniform, '插值后的均匀线圈图');
 
+%% 2025.8.11 利用这里的均匀插值后的线圈数据组
+% 进行最小距离检测 由于Negative从里圈到外圈 Positive从外圈到里圈
+% 因此先将其按照Negative+Positive的顺序拼接，然后按照单向方向检测相邻等值线的最小值
+switch lower(direction)
+    case {'x','y'}
+        neg = Achi_CoilPath_uniform.Negative2(:);
+    case 'z'
+        neg = Achi_CoilPath_uniform.Negative1(:);
+    otherwise
+        error('direction 必须是 ''x'', ''y'' 或 ''z''');
+end
+% 拼接 Positive 部分
+pos = Achi_CoilPath_uniform.Positive1(:);
+% 先 Negative 后 Positive
+allCells = [neg; pos];
+
+nCurves = numel(allCells);
+minDistList = zeros(nCurves-1, 1);
+
+for k = 1:(nCurves-1)
+    P1 = allCells{k};
+    P2 = allCells{k+1};
+    % 计算两条等值线所有点的欧氏距离矩阵
+    D = pdist2(P1, P2);
+    % 取最小值
+    minDistList(k) = min(D(:));
+end
+overallMinDist = min(minDistList);
+
+if overallMinDist < rWire*2 + gap
+    error('线圈间距过小，低于线径与安全距离的和，请降低匝数或调整线径与安全距离');
+else
+    fprintf('[PASS]通过间距安全检测，余量%.4f mm\n',(overallMinDist - rWire*2-gap)*1e3)
+end
 %% 第四部分 进行拐角检测
 CornerIdx = DetectSpiralCorners(Achi_CoilPath_uniform, CoilPsi_uniform, deltaPsi, params);
 % CornerIdx也是一个结构体，其包括四组:Positive两组，Negative两组
@@ -456,6 +490,7 @@ for idx = 1:2
     end
 end
 
+
 % 现在将组内曲线串联
 groups = fieldnames(CoilPath_serial_outside);
 for k = 1:numel(groups)
@@ -529,9 +564,9 @@ end
     P2 = CoilPath_serial_all.(negGrp)(1,:);
     
     dphi = angle( exp(1i * (P2(1) - P1(1))) ); % 最短差值
-    phiB = linspace(P1(1), P1(1) + dphi, 20*Nt).'; % 插值点数为20倍的匝数
+    phiB = linspace(P1(1), P1(1) + dphi, 10*Nt).'; % 插值点数为20倍的匝数
     
-    zB   = linspace(P1(2), P2(2), 20*Nt).';
+    zB   = linspace(P1(2), P2(2), 10*Nt).';
     
     bridge = [wrapToPi(phiB) , zB]; % 拼成插值线
 

@@ -44,13 +44,11 @@ params.r = linspace(0, params.a, params.r_num);
 % 常数参数
 params.mu0 = 4*pi*1e-7;  % 真空磁导率 [H/m]
 
-% 单个线圈匝数 可以在每个线圈产生前具体修改
-params.num_levels = 16;
+% 单个线圈匝数
+params.num_levels = 13;
 
 % 等值线势能幅度最小阈值
-params.x_contourc_minabs = 0.05;
-params.y_contourc_minabs = 0.05;
-params.z_contourc_minabs = 0.1;
+params.x_ = 13;
 
 % 线圈重新插值采样点倍数
 params.inter_fac = 1;

@@ -9,37 +9,26 @@ params = InitParameters();
 surfaceCurrent = Compute_SurfaceCurrent(params);
 streamFunction = Compute_StreamFunction(surfaceCurrent, params);
 % 绘制 x 方向的绕线路径柱面图
-params.a = 0.115; % x线圈圆柱半径
-params.num_levels = 16; % x y线圈匝数
 coilPaths_xg = Compute_CoilPaths(streamFunction, surfaceCurrent, params, 'x');
 % 绘制 y 方向
-params.a = 0.11; % y线圈圆柱半径
-coilPaths_yg = Compute_CoilPaths(streamFunction, surfaceCurrent, params, 'y');
+% coilPaths_yg = Compute_CoilPaths(streamFunction, surfaceCurrent, params, 'y');
 % 绘制 z 方向
-params.a = 0.105; % z线圈圆柱半径
-params.num_levels = 24; % z线圈匝数
-coilPaths_zg = Compute_CoilPaths(streamFunction, surfaceCurrent, params, 'z');
+% coilPaths_zg = Compute_CoilPaths(streamFunction, surfaceCurrent, params, 'z');
 
-visual_coilpath(coilPaths_xg, coilPaths_yg, coilPaths_zg);
 %% 可实现线圈转换
-params.a = 0.115; % x线圈圆柱半径
-params.num_levels = 16; % x y线圈匝数
 CoilPath_Achievable_xg = Achievable_CoilPath_Archimedes(coilPaths_xg, params, 'x', 0, 0);
-params.a = 0.11; % y线圈圆柱半径
-CoilPath_Achievable_yg = Achievable_CoilPath_Archimedes(coilPaths_yg, params, 'y', 0, 0);
-params.a = 0.105; % z线圈圆柱半径
-params.num_levels = 20; % z线圈匝数
-CoilPath_Achievable_zg = Achievable_CoilPath_Archimedes(coilPaths_zg, params, 'z', 0, 0);
+% CoilPath_Achievable_yg = Achievable_CoilPath_Archimedes(coilPaths_yg, params, 'y', 0, 0);
+% CoilPath_Achievable_zg = Achievable_CoilPath_Archimedes(coilPaths_zg, params, 'z', 0, 0);
 
 % 输出到TXT
-% datax = CoilPath_Achievable_xg.Serial{1}; 
-% datay = CoilPath_Achievable_yg.Serial{1};
+datax = CoilPath_Achievable_xg.Serial{1}; 
+% datay = CoilPath_Achievable_yg.Serial{1}; 
 % dataz = CoilPath_Achievable_zg.Serial{1}; 
-% xfname = 'CoilPath_Achievable_xg';
+xfname = 'CoilPath_Achievable_xg';
 % yfname = 'CoilPath_Achievable_yg';
 % zfname = 'CoilPath_Achievable_zg';
-% writematrix(datax, xfname, 'Delimiter', 'space');
-% fprintf('写入 %s （%d 行 × %d 列）\n', xfname, size(datax,1), size(datax,2));
+writematrix(datax, xfname, 'Delimiter', 'space');
+fprintf('写入 %s （%d 行 × %d 列）\n', xfname, size(datax,1), size(datax,2));
 % writematrix(datay, yfname, 'Delimiter', 'space');
 % fprintf('写入 %s （%d 行 × %d 列）\n', yfname, size(datay,1), size(datay,2));
 % writematrix(dataz, zfname, 'Delimiter', 'space');
@@ -54,15 +43,15 @@ obsPoints = GenerateObservationPoints(params);
 % B_cal_zg = Compute_MagneticField_BiotSavart(coilPaths_zg, obsPoints, params, 'z');
 % 计算可实现线圈产生的磁场
 B_cal_xg = Compute_MagneticField_BiotSavart(CoilPath_Achievable_xg, obsPoints, params, 'x'); % 默认1A电流
-B_cal_yg = Compute_MagneticField_BiotSavart(CoilPath_Achievable_yg, obsPoints, params, 'y');
-B_cal_zg = Compute_MagneticField_BiotSavart(CoilPath_Achievable_zg, obsPoints, params, 'z');
+% B_cal_yg = Compute_MagneticField_BiotSavart(CoilPath_Achievable_yg, obsPoints, params, 'y');
+% B_cal_zg = Compute_MagneticField_BiotSavart(CoilPath_Achievable_zg, obsPoints, params, 'z');
 
 %% 结果可视化
 % visual_J
-visual_coilpath(coilPaths_xg, coilPaths_yg, coilPaths_zg);
+visual_coilpath(coilPaths_xg, [], []);
 Visualize_B_Field_Components(B_cal_xg, obsPoints, 'x', params);
-Visualize_B_Field_Components(B_cal_yg, obsPoints, 'y', params);
-Visualize_B_Field_Components(B_cal_zg, obsPoints, 'z', params);
+% Visualize_B_Field_Components(B_cal_yg, obsPoints, 'y', params);
+% Visualize_B_Field_Components(B_cal_zg, obsPoints, 'z', params);
 
 
 
@@ -75,9 +64,9 @@ disp('效率计算:');
 pos_xg_max = obsPoints.xg_eta(Idx_max,:);
 pos_xg_min = obsPoints.xg_eta(Idx_min,:);
 xg_eta = abs((B_xg_max-B_xg_min)/(pos_xg_max(1)-pos_xg_min(1)));
-fprintf("X方向可加工梯度线圈效率为：%.3f mT/m/A \n",xg_eta*1000);
-% [Lx, totalLenx] = computeCoilInductance(CoilPath_Achievable_xg.Serial{1}, params.rWire);
-% fprintf("X方向可加工梯度线圈总长度为：%.3f m, 自感为：%.3f uH \n",totalLenx, Lx*1e6);
+fprintf("X方向梯度线圈效率为：%.3f mT/m/A \n",xg_eta*1000);
+[L, totalLen] = computeCoilInductance(CoilPath_Achievable_xg.Serial{1}, params.rWire);
+fprintf("X方向梯度线圈效率为：%.3f mT/m/A \n",xg_eta*1000);
 
 % Y梯度线圈效率
 [B_yg_max, Idx_max] = max(B_cal_yg.B_yg_eta(:,1));
@@ -86,8 +75,6 @@ pos_yg_max = obsPoints.yg_eta(Idx_max,:);
 pos_yg_min = obsPoints.yg_eta(Idx_min,:);
 yg_eta = abs((B_yg_max-B_yg_min)/(pos_yg_max(2)-pos_yg_min(2)));
 fprintf("Y方向梯度线圈效率为：%.3f mT/m/A \n",yg_eta*1000);
-% [Ly, totalLeny] = computeCoilInductance(CoilPath_Achievable_yg.Serial{1}, params.rWire);
-% fprintf("Y方向可加工梯度线圈总长度为：%.3f m, 自感为：%.3f uH \n",totalLeny, Ly*1e6);
 
 % Z梯度线圈效率
 [B_zg_max, Idx_max] = max(B_cal_zg.B_zg_eta(:,1));
@@ -96,15 +83,14 @@ pos_zg_max = obsPoints.zg_eta(Idx_max,:);
 pos_zg_min = obsPoints.zg_eta(Idx_min,:);
 zg_eta = abs((B_zg_max-B_zg_min)/(pos_zg_max(3)-pos_zg_min(3)));
 fprintf("Z方向梯度线圈效率为：%.3f mT/m/A \n",zg_eta*1000);
-% [Lz, totalLenz] = computeCoilInductance(CoilPath_Achievable_zg.Serial{1}, params.rWire);
-% fprintf("Z方向可加工梯度线圈总长度为：%.3f m, 自感为：%.3f uH \n",totalLenz, Lz*1e6);
+
 
 
 
 
 
 %% 保存图片
-% save_all_figures();
+save_all_figures();
 
 
 

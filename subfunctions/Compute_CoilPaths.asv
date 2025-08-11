@@ -133,10 +133,10 @@ end
 end
 
 function minDistMat = minContourDistances(PathsCell)
-% PathsCell: 包括 Paths.Positive 和 Paths.Negative
-% 计算每条等值线和其
+% PathsCell: 例如 Paths.Positive 或 Paths.Negative
+% 计算每条等值线和其单方向
 nCurves = numel(PathsCell);
-minDist = inf;
+minDistMat = inf(nCurves);
 
 for i = 1:nCurves
     P1 = PathsCell{i};   % [x, y, z]
