@@ -16,7 +16,7 @@ smooth_N = params.smooth_N;
 factor = params.inter_fac; 
 deltaPsi = params.deltaPsi;
 method = params.method;
-Nt = params.num_levels; % 用于最后飞线的插值点数确定 3*Nt 
+Nt = params.num_levels; % 用于最后飞线的插值点数确定 2*Nt 
 Nb = params.Nb; % 飞线尾部翘起点数
 beta = params.beta; % 阶跃函数控制 越大越陡
 a = params.a; % 圆柱外半径
@@ -231,7 +231,7 @@ for k = 1:(nCurves-1)
     P1 = allCells{k};
     P2 = allCells{k+1};
     % 计算两条等值线所有点的欧氏距离矩阵
-    D = pdist2(P1, P2);
+    D = pdist2_cylinder(P1, P2,a);
     % 取最小值
     minDistList(k) = min(D(:));
 end
@@ -273,7 +273,6 @@ for k = 1:numel(groups)
             % Positive，从pi到-pi排序，从外圈向内走
             start1 = CornerIdx.(grp){j}(3);
             end1 = CornerIdx.(grp){j}(2) + endtail_num_outside + floor(delta_endtail*j/(M-1));
-            % end1 = find( psi1 < deg2rad(170), 1, 'first' ); % 终止点为90度位置
 
             psi1_segment = [psi1(start1:end);psi1(1:end1)]; % 跨起始点拼接 需要检查开始象限与终止象限是否跨起始点
             pts1_segment = [pts1(start1:end,:);pts1(1:end1,:)]; 
@@ -281,6 +280,7 @@ for k = 1:numel(groups)
             % Negative，从-pi到pi排序，从内圈向外走
             start1 = CornerIdx.(grp){j}(4) - endtail_num_inside + floor(delta_endtail*j/(M-1));
             end1 = CornerIdx.(grp){j}(1);
+            % end1 = find( psi1 < deg2rad(10), 1, 'first' ); % 终止点为190度位置
 
             psi1_segment = psi1(start1:end1); % 从第四象限到第一象限不跨起点
             pts1_segment = pts1(start1:end1,:); 
@@ -297,14 +297,20 @@ for k = 1:numel(groups)
             z_target_psi   = interp1(psi2, pts2(:,2), target_psi, 'pchip');
             t = m/N; % 线性权重
             switch smooth_N
-                case 3 
-                    w = 3*t^2 - 2*t^3; % 三阶平滑阶跃
+                case 3
+                    % degree 3 (cubic)
+                    w = 3*t.^2 - 2*t.^3;
                 case 5
-                    w = 6*t^5 - 15*t^4 + 10*t^3; % 五阶平滑阶跃
+                    % degree 5 (quintic)
+                    w = 6*t.^5 - 15*t.^4 + 10*t.^3;
                 case 7
-                    w = 35*t^4 - 84*t^5 + 70*t^6 - 20*t^7; % 七阶平滑阶跃
+                    % degree 7 (septic)
+                    w = 35*t.^4 - 84*t.^5 + 70*t.^6 - 20*t.^7;
+                case 9
+                    % degree 9 (nonic)
+                    w = 126*t.^5 - 420*t.^6 + 540*t.^7 - 315*t.^8 + 70*t.^9;
                 otherwise
-                    error('阶跃只能是三/五/七阶');
+                    error('unsupported smooth_N');
             end
             target_pts = pts1_segment(m,:) * (1 - w) + w*[phi_target_psi, z_target_psi];
             tail = [tail;target_pts];
@@ -314,7 +320,7 @@ for k = 1:numel(groups)
             if startsWith(grp,'Positive')
                 CoilPath_serial_within.(grp){j} = [pts1(1:start1-1,:);tail]; 
             else
-                idx1 = find( psi1 > 0, 1, 'first' ); 
+                idx1 = find( psi1 > 0, 1, 'first' );
                 CoilPath_serial_within.(grp){j} = [pts1(idx1:end,:);pts1(1:start1-1,:);tail]; 
             end  
         else
@@ -323,7 +329,7 @@ for k = 1:numel(groups)
                 start = find( psi1 <= psi_last, 1, 'first' );
                 CoilPath_serial_within.(grp){j} = [pts1(start:start1-1,:);tail];
             else
-                start = find( psi1 >= psi_last, 1, 'first' );
+                start = find( psi1 >= psi_last, 1, 'first' ); %
                 CoilPath_serial_within.(grp){j} = [pts1(start:end,:);pts1(1:start1-1,:);tail];
             end
         end
@@ -505,7 +511,26 @@ if startsWith(direction,'z')
 end
 
 % 作图验证
-% plotSpiralDotLine(CoilPath_serial_outside, [direction,'对称构造——四组线圈串联图']);
+plotSpiralDotLine(CoilPath_serial_outside, [direction,'对称构造——四组线圈串联图']);
+
+% 输出未经过连线的RAW数据(.bin格式)
+fieldRAW = fieldnames(CoilPath_serial_outside);
+output_folder = fullfile('Result','RAWdata',direction);
+if ~exist(output_folder, 'dir')
+    mkdir(output_folder);
+end
+for i = 1:numel(fieldRAW)
+    pathname = fieldRAW{i};
+    dataRAW = CoilPath_serial_outside.(pathname);
+    binfilename = fullfile(output_folder,[direction,'_',pathname,'.bin']);
+
+    fid = fopen(binfilename,'wb');
+    if fid == -1
+        error('无法创建文件：%s', binfilename);
+    end
+    fwrite(fid,dataRAW','double');
+    fclose(fid);
+end
 
 %% 第八部分 飞线
 % 对于XY梯度线圈 取Positive1与Negative1最内层端点做飞线
@@ -564,9 +589,9 @@ end
     P2 = CoilPath_serial_all.(negGrp)(1,:);
     
     dphi = angle( exp(1i * (P2(1) - P1(1))) ); % 最短差值
-    phiB = linspace(P1(1), P1(1) + dphi, 10*Nt).'; % 插值点数为20倍的匝数
+    phiB = linspace(P1(1), P1(1) + dphi, 2*Nt).'; % 插值点数为2倍的匝数
     
-    zB   = linspace(P1(2), P2(2), 10*Nt).';
+    zB   = linspace(P1(2), P2(2), 2*Nt).';
     
     bridge = [wrapToPi(phiB) , zB]; % 拼成插值线
 
@@ -832,4 +857,11 @@ function SerialClean = removeAndCheckDuplicates(SerialLoop)
     else
         disp('已删除重复点，并未检测到非相邻重复点');
     end
+end
+
+function D = pdist2_cylinder(P1, P2, R)
+% P1,P2: N×2, [phi z] (phi in rad)
+    dphi = angle(exp(1i*(P1(:,1) - P2(:,1)'))); % wrapToPi
+    dz   = P1(:,2) - P2(:,2)';                  % z差
+    D    = sqrt( dz.^2 + (2*R*sin(dphi/2)).^2 );
 end

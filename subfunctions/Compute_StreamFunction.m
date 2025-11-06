@@ -58,7 +58,7 @@ colorbar;
 
 subplot(1,3,3);
 contourf(PhiGrid, ZGrid, Psi_z, 20, 'LineColor','none');
-title('y梯度Ψ');
+title('z梯度Ψ');
 xlabel('\phi (rad)');
 ylabel('z (m)');
 colorbar;

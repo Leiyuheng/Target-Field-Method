@@ -51,3 +51,8 @@ Classical TFM method for MRI for the transverse dominant magnetic field under Ha
 ---
 
 > 详细情况可见记录.docx
+
+## 更新说明 2025.11.6
+出于加工考虑,添加了输出文件夹Result,其中RAWdata是螺旋连接后未转为XYZ坐标的Phi-z坐标数据,用于PostProcess.m中转为柱面Rev1_cylinder或平面坐标Rev1_plane
+而contourc_Plane_mm是等值线的平面坐标，通过子函数cylinder2plane.m输出的，等值线组的平面坐标
+在solidworks中可以通过包覆进行操作，最终的线圈结构存储在3DStructure文件夹中
